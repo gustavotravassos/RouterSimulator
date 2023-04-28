@@ -14,12 +14,14 @@ class Router:
                                                            'next_hop': neighbor_router}
 
     def update_routing_table(self, router, destination_network, output_interface, distance):
+        # Se não está na tabela ou se a distância na tabela é maior
         if router.router_name not in self.routing_table or self.routing_table[router.router_name]['distance'] > distance:
             self.routing_table[router.router_name] = {'destination_network': destination_network,
                                                       'output_interface': output_interface,
                                                       'distance': distance,
                                                       'next_hop': router}
 
+            # Propagação
             for neighbor in self.routing_table:
                 if neighbor != self.router_name and neighbor != router.router_name and neighbor in router.routing_table:
                     if self.routing_table[neighbor]['distance'] > self.routing_table[router.router_name]['distance'] + \
@@ -48,6 +50,9 @@ class Router:
 
     def handle_connection(self, connection, address):
         print(f"Connected to address: {address}")
+        print()
+        self.print_table()
+
         while True:
             content = connection.recv(1024)
 
@@ -61,22 +66,10 @@ class Router:
             if package_type == "Routing":
                 print("Package Type: Routing")
                 router_name, destination_network, output_interface, distance, next_hop = content.split(', ')
-                # self.print_table()
                 # self.update_routing_table(router_name, destination_network, output_interface, distance)
 
             elif package_type == "Data":
                 print("Package Type: Data")
                 source_ip, destination_ip, ttl, tos = content.split(', ')
-
-                # response = self.send_package(source_ip, destination_ip, int(ttl), int(tos))
-
-                # table_line = self.routing_table.get(destination_ip)
-
-                # if table_line is not None:
-                #     destination_connection = table_line['connection']
-                #     destination_connection.sendall(response.encode())
-
-                # else:
-                #     print("There is no table_line for", destination_ip)
 
         connection.close()

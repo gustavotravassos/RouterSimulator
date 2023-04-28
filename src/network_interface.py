@@ -47,8 +47,8 @@ class NetworkInterface:
     def receive_routing_package(self):
         while True:
             received_package = self.interface.recv(1024)
-            # print(f"------------ New package ------------")
-            # print(f"{self.router_name}")
+            print(f"------------ New package ------------")
+            print(f"{self.router_name}")
             print(f"Received package containing: {received_package.decode()}")
 
     def __del__(self):
